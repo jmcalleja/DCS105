@@ -1,0 +1,49 @@
+#Joel Embiid vs Past MVPs
+#importing data and packages 
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(readxl)
+DCS105_Final_project_Data <- read_excel("~/Desktop/DCS105 - Final project Data.xlsx")
+View(DCS105_Final_project_Data) 
+
+df <- data.frame(DCS105_Final_project_Data)
+
+#finding the averages of past mvps
+points_avg <- mean(df$Points[df$Player != 'Joel Embiid'])
+rebounds_avg <-mean(df$Rebounds[df$Player != 'Joel Embiid'])
+assists_avg <- mean(df$Assists[df$Player != 'Joel Embiid'])
+
+#creating Joel Embiid's stat variables
+embiid_points <- df$Points[df$Player == 'Joel Embiid']
+embiid_rebounds <- df$Rebounds[df$Player == 'Joel Embiid']
+embiid_assists <- df$Assists[df$Player == 'Joel Embiid']
+
+#creating new dataframe to make box plot
+titles <- c("Points", "Rebounds", "Assists")
+past_mvp <- c(points_avg, rebounds_avg, assists_avg)
+joel_embiid <- c(embiid_points, embiid_rebounds, embiid_assists)
+mvp_df <- data.frame(titles, past_mvp, joel_embiid)
+
+#creating box plot comparing Joel Embiid and past MVPs
+mvp_long <- mvp_df %>%
+  gather("Player", "Value", -titles)
+ggplot(mvp_long, aes(x = titles, y = Value, fill = Player))+
+  geom_col(position = "dodge") +
+  ggtitle("Joel Embiid vs. Past MVPs")+
+  xlab("Statistical Categories") + 
+  scale_fill_discrete(labels = c("Joel Embiid", "Past MVPs"))
+
+#Joel Embiid vs Current Contenders 
+Current_Stats <- read_excel("~/Desktop/DCS105 - Final project Data.xlsx", 
+                                        sheet = "Joel vs This Season Contenders ")
+View(Current_Stats)
+df_current <- data.frame(Current_Stats)
+keeps <- c("Player", "Points", "Rebounds", "Assists", "Steals", "Blocks", "Win.Shares")
+current_filtered <- df_current[keeps]
+current_long <- current_filtered %>%
+  gather("Statistics", "Value", -Player)
+ggplot(current_long, aes(x = Statistics, y = Value, fill = Player))+
+  geom_col(position = "dodge") +
+  ggtitle("Joel Embiid vs. Giannis Antetokounmpo vs. Nikola Jokic")+
+  xlab("Statistical Categories")
